@@ -33,12 +33,14 @@ void APickup::Tick(float DeltaTime)
 
 }
 
+// Called on overlap
 void APickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Check if player overlapped
 	APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
 	if (IsValid(Player))
 	{
-		//GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, "Colliderdeded");
+		// Add ammo to player mag
 		Player->AddAmmo(AmmoToAdd);
 		Destroy();
 	}

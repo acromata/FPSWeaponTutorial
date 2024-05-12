@@ -18,7 +18,6 @@ APlayerCharacter::APlayerCharacter()
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>("Gun Mesh");
 	GunMesh->SetupAttachment(Camera);
 
-
 	// Gun values
 	GunRange = 500.f;
 	BulletDamage = 1.f;
@@ -34,6 +33,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Set current ammo to max ammo
 	CurrentAmmo = MaxAmmo;
 }
 
@@ -42,6 +42,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Subtract time since last shot every frame (Better to do this using a timer)
 	TimeSinceLastShot--;
 }
 
@@ -124,9 +125,13 @@ void APlayerCharacter::Shoot()
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(this);
 		
+		// Subtract ammo
 		CurrentAmmo--;
+
+		// Time since last shot is now
 		TimeSinceLastShot = TimeBetweenShots;
 		
+		// Check if automatic weapon, if not, stop firing after one shot
 		if (!bIsAutomatic)
 		{
 			bCanShoot = false;
@@ -143,12 +148,14 @@ void APlayerCharacter::Shoot()
 			}
 		}
 
+		// Debug lines, not visible in Shipping builds.
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1, 0, 1);
 	}
 }
 
 void APlayerCharacter::EndShoot()
 {
+	// Allow shooting again if not automatic
 	if (!bIsAutomatic)
 	{
 		bCanShoot = true;
@@ -157,8 +164,9 @@ void APlayerCharacter::EndShoot()
 
 void APlayerCharacter::Reload()
 {
-	if (CurrentAmmo != MaxAmmo)
+	if (CurrentAmmo != MaxAmmo) // Don't allow reload if you have max ammo
 	{
+		// Calculate the ammo in magazine so no ammo is lost during reload.
 		if (AmmoInMag >= MaxAmmo)
 		{
 			// Get ammo to subtract from the magazine
@@ -176,7 +184,7 @@ void APlayerCharacter::Reload()
 		}
 
 		//bIsReloading = true;
-		// Call reload animation on weapon
+		// Call reload animation on weapon here
 	}
 }
 
